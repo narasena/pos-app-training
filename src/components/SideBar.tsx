@@ -36,7 +36,7 @@ export default function SideBar() {
     setSidebarOpen(!sidebarOpen)
   }
   return (
-    <div className={`sm:w-[${sidebarOpen ? "280" : "60"}px] h-screen bg-darkbg2 p-4 flex flex-col justify-between`}>
+    <div className={`sm:w-[${sidebarOpen ? "300" : "60"}px] h-screen bg-darkbg2 p-4 flex flex-col justify-between`}>
       <div>
 
         {/* header  */}
