@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { IconSearch } from "@tabler/icons-react";
+import { Input } from "@/components/ui/input";
+import { IconGardenCartFilled, IconSearch, IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -10,7 +11,10 @@ interface IOrderItem {
   dishName: string;
   price: number;
   stock: number;
-  qty: number
+}
+
+interface ICartItem extends IOrderItem {
+  qty: number;
 }
 
 export default function MenuPage() {
@@ -82,7 +86,9 @@ export default function MenuPage() {
     },
   ];
 
-  const [orderCart, setOrderCart] = useState<IOrderItem[]>([]);
+  const [orderCart, setOrderCart] = useState<ICartItem[]>([]);
+
+    const cartSubTotal = orderCart.reduce((sum, curr) => sum + (curr.price * curr.qty), 0)
 
   const orderType = ["Dine In", "To Go", "Delivery"];
   const [currentOrderType, setCurrentOrderType] = useState(orderType[0]);
@@ -151,18 +157,25 @@ export default function MenuPage() {
               ?.items.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-formbg flex flex-col gap-1 items-center text-white"
+                  className="bg-formbg flex flex-col gap-1 items-center text-white hover:ring-1 hover:ring-blue-700 cursor-pointer"
                   onClick={() => {
                     setOrderCart((prevItems) => {
                       console.log("Previous Cart: ", prevItems);
-                      const currentIndex = prevItems.findIndex(prev => prev.dishName === item.dishName)
-                      if(currentIndex === -1){
-                        item[qty] = 0
+                      const currentIndex = prevItems.findIndex(
+                        (prev) => prev.dishName === item.dishName
+                      );
+
+                      if (currentIndex === -1) {
+                        const newItem: ICartItem = { ...item, qty: 1 };
+                        return [...prevItems, newItem];
                       }
-                       
-                      
+
                       console.log("New Cart: ", ...prevItems, item);
-                      return [...prevItems, item];
+                      return prevItems.map((cartItem, index) =>
+                        index === currentIndex
+                          ? { ...cartItem, qty: cartItem.qty + 1 }
+                          : cartItem
+                      );
                     });
                   }}
                 >
@@ -185,8 +198,25 @@ export default function MenuPage() {
           </div>
         </div>
       </div>
+      {/* order sheet  */}
       <div className="bg-darkbg2 w-100 min-h-full p-6 text-white flex flex-col gap-y-5">
-        <h2 className="text-2xl font-semibold">Order #32412</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold">Order #32412</h2>
+
+          <div className="flex items-center">
+            <IconGardenCartFilled />
+            <p className="p-1 size-6 centered bg-primary text-white text-xs rounded-full">
+              {orderCart.length}
+            </p>
+          </div>
+        </div>
+        <div>
+          <Input
+            type="text"
+            className="w-full"
+            placeholder="Nama Pelanggan..."
+          />
+        </div>
         <div className="flex gap-2 items-center">
           {orderType.map((item, index) => (
             <Button
@@ -197,13 +227,54 @@ export default function MenuPage() {
               {item}
             </Button>
           ))}
+          {currentOrderType === "Dine In" && (
+            <Input type="text" placeholder="No. Meja" />
+          )}
         </div>
         <div className="grid grid-cols-12 gap-x-1 gap-y-3">
           <span className="col-span-8">Item</span>
           <span className="col-span-2">Qty</span>
           <span className="col-span-2">Price</span>
           <div className="col-span-12 border-b border-white/40 w-full"></div>
+          {orderCart.map((cartItem, index) => (
+            <div key={index} className="contents">
+              {/* <div className=""> */}
+              <div className="col-span-8 flex items-center">
+                <Image
+                  src={cartItem.imgUrl}
+                  alt={cartItem.dishName}
+                  width={60}
+                  height={60}
+                  className="mr-3"
+                />
+                <div className="flex flex-col">
+                  <p>{cartItem.dishName}</p>
+                  <p>{cartItem.price}</p>
+                </div>
+              </div>
+              <div className="col-span-2 w-full centered p-4 bg-formbg rounded-md border border-gray-300/40">
+                {cartItem.qty}
+              </div>
+              <div className="col-span-2 centered p-4">
+                {cartItem.qty * cartItem.price}
+              </div>
+              {/* </div> */}
+              <div className="col-span-10 flex items-center">
+                <Input type="text" placeholder="Order Note..." />
+              </div>
+              <div className="col-span-2 centered">
+                <IconTrash className="p-0.5 size-10 text-red-400 hover:text-red-500" />
+              </div>
+            </div>
+          ))}
+          <p className="col-span-10">Discount: </p>
+          <p className="col-span-2">0</p>
+          <p className="col-span-10">Subtotal: </p>
+          <p className="col-span-2">
+            {cartSubTotal.toLocaleString("us-US", { maximumFractionDigits: 2 })}
+          </p>
         </div>
+        <Button className="bg-primary text-white">Continue To Payment</Button>
       </div>
     </div>
   );
