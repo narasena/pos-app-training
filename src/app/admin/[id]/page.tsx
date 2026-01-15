@@ -4,9 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { useParams } from "next/navigation";
 import React from "react";
 
+export interface IRecipe {
+  id: number;
+  name: string;
+  image: string;
+  cuisine: string;
+  instructions: string[];
+  tags: string[]
+  mealType: string[]
+}
+
 export default function AdminSlugPage() {
   const { id } = useParams();
-  const [recipe, setRecipe] = React.useState<any>(null);
+  const [recipe, setRecipe] = React.useState<IRecipe|null>(null);
   const handleFetchRecipe = async () => {
     try {
       const response = await fetch(`https://dummyjson.com/recipes/${id}`);
@@ -31,7 +41,7 @@ export default function AdminSlugPage() {
               </h2>
 
               <ol className="mt-4 text-pretty text-gray-400">
-                {recipe?.instructions.map((inst: any, index: number) => (
+                {recipe?.instructions.map((inst: string, index: number) => (
                   <li key={index}>
                     <span>
                       {index + 1}
@@ -47,12 +57,12 @@ export default function AdminSlugPage() {
           <div className="flex flex-col gap-2">
             {recipe && <img src={recipe.image} className="rounded-xl" alt="" />}
             <div className="flex gap-x-1">
-              {recipe?.tags.map((tag: any, index: number) => (
+              {recipe?.tags.map((tag: string, index: number) => (
                 <Badge key={index}>{tag}</Badge>
               ))}
             </div>
             <div className="flex gap-x-1">
-              {recipe?.mealType.map((type: any, index: number) => (
+              {recipe?.mealType.map((type: string, index: number) => (
                 <Badge variant={"secondary"} key={index}>
                   {type}
                 </Badge>

@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Link from "next/link";
+import { IRecipe } from "./[id]/page";
+
 
 export default function AdminPage() {
   const [recipes, setRecipes] = React.useState([]);
@@ -39,7 +41,7 @@ export default function AdminPage() {
         className="w-full max-w-[70vw] p-10"
       >
         <CarouselContent>
-          {recipes.map((recipe: any) => (
+          {recipes.map((recipe: IRecipe) => (
             <CarouselItem key={recipe.id} className="md:basis-1/2 lg:basis-1/3">
               <Link href={`/admin/${recipe.id}`} className="p-4 block relative">
                 <Card >

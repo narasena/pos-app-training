@@ -4,9 +4,10 @@ import { IconBuildingStore, IconBurger, IconDashboard, IconLogout, IconSettingsF
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { IUser } from "@/@types/user.type";
 
 export default function SideBar() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<IUser|null>(null)
   const handleFetchUserCredential = async () => {
     fetch(`https://dummyjson.com/users/16`).then(res => res.json()).then(setUser)
   }
@@ -77,7 +78,7 @@ export default function SideBar() {
         {sidebarOpen && (
           <div className="flex text-sm font-medium gap-2">
             <Avatar>
-              <AvatarImage src={user && user.image} />
+              <AvatarImage src={user?.image} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div>
